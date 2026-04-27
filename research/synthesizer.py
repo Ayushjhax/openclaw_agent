@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+import time
 from typing import Any
 
 try:
@@ -13,6 +15,50 @@ except ImportError:
 
 def _get_api_key(api_key: str | None) -> str | None:
     return api_key or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+
+
+def _is_transient_error(error: Exception) -> bool:
+    message = str(error).lower()
+    transient_markers = (
+        "503",
+        "unavailable",
+        "high demand",
+        "resource exhausted",
+        "temporarily",
+        "timeout",
+        "timed out",
+        "429",
+        "rate limit",
+        "internal",
+    )
+    return any(marker in message for marker in transient_markers)
+
+
+def _generate_with_retries(client: Any, model: str, prompt: str, max_retries: int = 3) -> str | None:
+    last_error: Exception | None = None
+    for attempt in range(max_retries):
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt,
+            )
+            text = response.text
+            if text and text.strip():
+                return text
+            return None
+        except Exception as error:
+            last_error = error
+            is_last_attempt = attempt == max_retries - 1
+            if is_last_attempt or not _is_transient_error(error):
+                break
+
+            # Exponential backoff: 1s, 2s, 4s
+            wait_seconds = min(2 ** attempt, 4)
+            time.sleep(wait_seconds)
+
+    if last_error:
+        raise last_error
+    return None
 
 
 def synthesize_report(
@@ -41,23 +87,26 @@ def synthesize_report(
         "gemini-2.0-flash",
     ]
     models_to_try = list(dict.fromkeys(models_to_try))
+    failure_messages: list[str] = []
+    from google import genai
+
+    os.environ["GEMINI_API_KEY"] = key
+    client = genai.Client()
     for m in models_to_try:
         try:
-            from google import genai
-
-            os.environ["GEMINI_API_KEY"] = key
-            client = genai.Client()
-            response = client.models.generate_content(
-                model=m,
-                contents=prompt,
-            )
-            text = response.text
-            if text and text.strip():
+            text = _generate_with_retries(client=client, model=m, prompt=prompt, max_retries=3)
+            if text:
                 return text
         except Exception as e:
-            import sys
-            print(f"Gemini ({m}) failed: {e}", file=sys.stderr)
+            failure_messages.append(f"{m}: {e}")
             continue
+
+    if failure_messages:
+        failures = " | ".join(failure_messages)
+        print(
+            f"Gemini report synthesis failed across fallback models; using static report. Details: {failures}",
+            file=sys.stderr,
+        )
 
     return _fallback_report(
         market_data, quant_signals, on_chain_analysis, news_sentiment, polymarket_research

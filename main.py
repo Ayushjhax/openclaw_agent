@@ -14,6 +14,19 @@ from research.synthesizer import synthesize_report
 
 DEFAULT_ONCHAIN_WALLET = "vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg"
 
+def _friendly_helius_error_note(error: Exception) -> str:
+    message = str(error).lower()
+    if "max usage reached" in message or "quota" in message:
+        return "Helius API quota exhausted (max usage reached)."
+    if "api key required" in message or "api key" in message:
+        return "Helius API key missing or invalid."
+    if "429" in message or "rate limit" in message:
+        return "Helius API rate-limited; try again shortly."
+    if "network error" in message or "timed out" in message or "timeout" in message:
+        return "Helius network issue; try again shortly."
+    return f"Helius API unavailable: {error}"
+
+
 def main() -> None:
     print("Running AI Trading Research pipeline...\n")
     print("[1/6] Fetching market prices...")
@@ -36,7 +49,11 @@ def main() -> None:
         print(f"      Whale in: {on_chain_analysis.get('whale_in', 0)} | Whale out: {on_chain_analysis.get('whale_out', 0)} | Total in: {total_in:,.0f}")
     except Exception as e:
         print(f"      (On-chain skipped: {e})")
-        on_chain_analysis = {"whale_in": 0, "whale_out": 0, "note": "Helius API not configured"}
+        on_chain_analysis = {
+            "whale_in": 0,
+            "whale_out": 0,
+            "note": _friendly_helius_error_note(e),
+        }
     print("[4/6] Fetching news sentiment...")
     try:
         news_sentiment = get_news_sentiment(limit=10)
@@ -51,7 +68,7 @@ def main() -> None:
         polymarket_results = asyncio.run(run_research(max_markets=600, top_n=5))
         print(
             f"      Opportunities: {len(polymarket_results.get('top_opportunities', []))} | "
-            f"Arbitrage: {len(polymarket_results.get('arbitrage', []))}"
+            f"Arbitrage/Watchlist: {len(polymarket_results.get('arbitrage', []))}"
         )
     except Exception as e:
         print(f"      (Polymarket skipped: {e})")
