@@ -1,98 +1,79 @@
 from __future__ import annotations
 
+import random
 from typing import Any
 
-import pandas as pd
-
-from ta.momentum import RSIIndicator
-from ta.trend import EMAIndicator, MACD
-
-
-def _to_dataframe(data: pd.DataFrame | list[dict[str, Any]] | dict[str, list]) -> pd.DataFrame:
-    if isinstance(data, pd.DataFrame):
-        df = data.copy()
-    elif isinstance(data, list) and data and isinstance(data[0], dict):
-        df = pd.DataFrame(data)
-    elif isinstance(data, dict):
-        df = pd.DataFrame(data)
-    else:
-        raise TypeError("data must be a DataFrame, list of dicts, or dict of lists")
-    df.columns = [c.lower() for c in df.columns]
-    if "close" not in df.columns:
-        raise ValueError("OHLC data must include a 'close' column")
-    return df
+from analysis.pure_indicators import (
+    ema_series,
+    extract_closes,
+    macd_dict,
+    wilder_rsi_series,
+)
 
 
 def calculate_rsi(
-    data: pd.DataFrame | list[dict[str, Any]] | dict[str, list],
+    data: Any,
     period: int = 14,
-) -> pd.Series:
-    df = _to_dataframe(data)
-    close = df["close"]
-    indicator = RSIIndicator(close=close, window=period)
-    return indicator.rsi()
+) -> list[float | None]:
+    """Wilder RSI; returns a list (same length as closes), leading values None."""
+    closes = extract_closes(data)
+    return wilder_rsi_series(closes, period)
 
 
 def calculate_ema(
-    data: pd.DataFrame | list[dict[str, Any]] | dict[str, list],
+    data: Any,
     period: int = 20,
-) -> pd.Series:
-    df = _to_dataframe(data)
-    close = df["close"]
-    indicator = EMAIndicator(close=close, window=period)
-    return indicator.ema_indicator()
+) -> list[float | None]:
+    closes = extract_closes(data)
+    return ema_series(closes, period)
 
 
 def calculate_macd(
-    data: pd.DataFrame | list[dict[str, Any]] | dict[str, list],
+    data: Any,
     fast_period: int = 12,
     slow_period: int = 26,
     signal_period: int = 9,
-) -> pd.DataFrame:
-    df = _to_dataframe(data)
-    close = df["close"]
-    indicator = MACD(
-        close=close,
-        window_slow=slow_period,
-        window_fast=fast_period,
-        window_sign=signal_period,
-    )
-    return pd.DataFrame(
-        {
-            "macd_line": indicator.macd(),
-            "macd_signal": indicator.macd_signal(),
-            "macd_histogram": indicator.macd_diff(),
-        }
+) -> dict[str, list[float | None]]:
+    closes = extract_closes(data)
+    return macd_dict(
+        closes,
+        fast_period=fast_period,
+        slow_period=slow_period,
+        signal_period=signal_period,
     )
 
 
 if __name__ == "__main__":
-    import numpy as np
-
-    np.random.seed(42)
+    random.seed(42)
     n = 100
-    close = 100 + np.cumsum(np.random.randn(n) * 0.5)
-    sample = pd.DataFrame(
-        {
-            "open": close - 0.5,
-            "high": close + np.abs(np.random.randn(n)),
-            "low": close - np.abs(np.random.randn(n)),
-            "close": close,
-        }
-    )
+    close: list[float] = [100.0]
+    for _ in range(n - 1):
+        close.append(close[-1] + random.gauss(0, 0.5))
+    sample: list[dict[str, float]] = []
+    for i in range(n):
+        c = close[i]
+        wobble = abs(random.gauss(0, 0.2))
+        sample.append(
+            {
+                "open": c - 0.5,
+                "high": c + wobble,
+                "low": c - wobble,
+                "close": c,
+            }
+        )
 
     print("Sample OHLC (last 5 rows):")
-    print(sample.tail())
+    for row in sample[-5:]:
+        print(row)
     print()
 
     rsi = calculate_rsi(sample)
-    print(f"RSI (last 5):\n{rsi.tail()}")
+    print(f"RSI (last 5): {rsi[-5:]}")
     print()
 
     ema = calculate_ema(sample, period=20)
-    print(f"EMA(20) (last 5):\n{ema.tail()}")
+    print(f"EMA(20) (last 5): {ema[-5:]}")
     print()
 
     macd = calculate_macd(sample)
-    print("MACD (last 5):")
-    print(macd.tail())
+    print("MACD (last 5) macd_line:", macd["macd_line"][-5:])

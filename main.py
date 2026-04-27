@@ -48,7 +48,7 @@ def main() -> None:
     try:
         from skills.trade_research.trade_research import run_research
 
-        polymarket_results = asyncio.run(run_research())
+        polymarket_results = asyncio.run(run_research(max_markets=600, top_n=5))
         print(
             f"      Opportunities: {len(polymarket_results.get('top_opportunities', []))} | "
             f"Arbitrage: {len(polymarket_results.get('arbitrage', []))}"
@@ -71,10 +71,10 @@ def main() -> None:
     print(report)
 
 
-def run_polymarket(json_output: bool = False) -> None:
+def run_polymarket(json_output: bool = False, top_n: int = 5, max_markets: int = 600) -> None:
     from skills.trade_research.trade_research import run_research, print_results
 
-    result = asyncio.run(run_research())
+    result = asyncio.run(run_research(max_markets=max_markets, top_n=top_n))
     if json_output:
         print(json.dumps(result, indent=2))
     else:
@@ -103,9 +103,25 @@ Commands:
         action="store_true",
         help="JSON output (polymarket only)",
     )
+    parser.add_argument(
+        "--top",
+        type=int,
+        default=5,
+        help="Polymarket: rows per table (default 5)",
+    )
+    parser.add_argument(
+        "--max-markets",
+        type=int,
+        default=600,
+        help="Polymarket: max markets to scan (default 600)",
+    )
     args = parser.parse_args()
 
     if args.command == "polymarket":
-        run_polymarket(json_output=args.json)
+        run_polymarket(
+            json_output=args.json,
+            top_n=args.top,
+            max_markets=args.max_markets,
+        )
     else:
         main()

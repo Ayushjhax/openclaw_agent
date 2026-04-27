@@ -5,10 +5,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pandas as pd
-
 from analysis.indicators import calculate_ema, calculate_rsi
-from collectors.binance import get_klines
+
+
+def _last_value(series: list[float | None], default: float) -> float:
+    for x in reversed(series):
+        if x is not None:
+            return float(x)
+    return default
 
 
 def _derive_signal(rsi: float, trend: str) -> str:
@@ -32,6 +36,8 @@ def analyze_market(
     rsi_period: int = 14,
     ema_period: int = 20,
 ) -> dict[str, str | int]:
+    from collectors.binance import get_klines
+
     ohlc = get_klines(symbol=symbol, interval=interval, limit=limit)
 
     if len(ohlc) < max(rsi_period, ema_period) + 1:
@@ -41,16 +47,11 @@ def analyze_market(
             "signal": "insufficient data",
         }
 
-    df = pd.DataFrame(ohlc)
-    rsi_series = calculate_rsi(df, period=rsi_period)
-    ema_series = calculate_ema(df, period=ema_period)
-    last_close = df["close"].iloc[-1]
-    last_ema = ema_series.iloc[-1]
-    last_rsi = rsi_series.iloc[-1]
-    if pd.isna(last_rsi):
-        last_rsi = 50.0
-    if pd.isna(last_ema):
-        last_ema = last_close
+    rsi_series = calculate_rsi(ohlc, period=rsi_period)
+    ema_series = calculate_ema(ohlc, period=ema_period)
+    last_close = float(ohlc[-1]["close"])
+    last_ema = _last_value(ema_series, last_close)
+    last_rsi = _last_value(rsi_series, 50.0)
     trend = "bullish" if last_close >= last_ema else "bearish"
     rsi_int = int(round(last_rsi))
     signal = _derive_signal(last_rsi, trend)

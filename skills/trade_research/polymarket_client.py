@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 GAMMA_API_BASE = "https://gamma-api.polymarket.com"
 
+DEFAULT_HEADERS = {
+    "User-Agent": "ai-trading-research/1.0 (Polymarket-Gamma-Client)",
+    "Accept": "application/json",
+}
+
 
 @dataclass
 class Polymarket:
@@ -77,8 +82,8 @@ def _parse_market(raw: dict) -> Optional[Polymarket]:
             return None
 
         yes_price, no_price = _parse_prices(raw)
-        liquidity = _parse_float(raw.get("liquidity"))
-        volume = _parse_float(raw.get("volume"))
+        liquidity = _parse_float(raw.get("liquidityNum", raw.get("liquidity")))
+        volume = _parse_float(raw.get("volumeNum", raw.get("volume")))
         end_date = _parse_datetime(raw.get("endDate"))
         closed = bool(raw.get("closed", False))
 
@@ -97,6 +102,12 @@ def _parse_market(raw: dict) -> Optional[Polymarket]:
     except Exception as e:
         logger.warning(f"Failed to parse market: {e}")
         return None
+
+
+def market_event_url(market: Polymarket) -> Optional[str]:
+    if market.slug:
+        return f"https://polymarket.com/event/{market.slug}"
+    return None
 
 
 async def fetch_markets(
@@ -120,7 +131,7 @@ async def fetch_markets(
         if client is not None:
             data = await _do_fetch(client)
         else:
-            async with httpx.AsyncClient(timeout=30.0) as c:
+            async with httpx.AsyncClient(timeout=60.0, headers=DEFAULT_HEADERS) as c:
                 data = await _do_fetch(c)
     except httpx.HTTPError as e:
         logger.error(f"Polymarket API error: {e}")
@@ -151,7 +162,7 @@ async def fetch_all_markets(
     offset = 0
     batch_size = 200
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=60.0, headers=DEFAULT_HEADERS) as client:
         while len(all_markets) < max_markets:
             batch = await fetch_markets(
                 limit=batch_size,

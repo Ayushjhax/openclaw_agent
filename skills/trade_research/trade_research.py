@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 async def run_research(
-    max_markets: int = 500,
-    top_n: int = 10,
+    max_markets: int = 600,
+    top_n: int = 5,
 ) -> dict:
     return await run_analysis(max_markets=max_markets, top_opportunities_n=top_n)
 
@@ -38,42 +38,48 @@ def print_results(result: dict) -> None:
     console = Console()
     opps = result.get("top_opportunities", [])
     if opps:
-        table = Table(title="Top 10 Trading Opportunities", show_header=True)
+        table = Table(title=f"Top {len(opps)} Trading Opportunities", show_header=True)
         table.add_column("Rank", style="cyan", width=4)
-        table.add_column("Question", style="white", max_width=50)
+        table.add_column("Question", style="white", max_width=44)
         table.add_column("YES", justify="right", width=6)
         table.add_column("NO", justify="right", width=6)
         table.add_column("Liquidity", justify="right", width=10)
         table.add_column("Volume", justify="right", width=10)
-        table.add_column("Reason", style="dim", max_width=30)
+        table.add_column("Reason", style="dim", max_width=24)
+        table.add_column("Link", style="blue", max_width=28)
 
         for row in opps:
             table.add_row(
                 str(row.get("rank", "")),
-                str(row.get("question", ""))[:50],
+                str(row.get("question", ""))[:44],
                 f"{row.get('yes_price', 0):.2f}",
                 f"{row.get('no_price', 0):.2f}",
                 f"{row.get('liquidity', 0):,.0f}",
                 f"{row.get('volume', 0):,.0f}",
-                str(row.get("reason", ""))[:30],
+                str(row.get("reason", ""))[:24],
+                (str(row.get("url") or "")[:28]),
             )
         console.print(table)
     else:
         console.print("[yellow]No opportunities detected.[/yellow]")
     arbs = result.get("arbitrage", [])
     if arbs:
-        table = Table(title="Arbitrage Opportunities", show_header=True)
-        table.add_column("Type", style="green", width=18)
+        table = Table(title=f"Top {len(arbs)} Arbitrage / Watchlist", show_header=True)
+        table.add_column("#", style="cyan", width=3)
+        table.add_column("Type", style="green", width=16)
         table.add_column("Total Prob", justify="right", width=10)
         table.add_column("Profit %", justify="right", width=8)
-        table.add_column("Details", style="dim", max_width=40)
+        table.add_column("Details", style="dim", max_width=32)
+        table.add_column("Link", style="blue", max_width=28)
 
         for a in arbs:
             table.add_row(
-                a.get("type", ""),
+                str(a.get("rank", "")),
+                str(a.get("type", ""))[:16],
                 str(a.get("total_probability", "")),
                 f"{a.get('profit_potential_pct', 0):.2f}%",
-                str(a.get("details", ""))[:40],
+                str(a.get("details", ""))[:32],
+                (str(a.get("url") or "")[:28]),
             )
         console.print(table)
     else:
@@ -84,19 +90,21 @@ def _print_fallback(result: dict) -> None:
     opps = result.get("top_opportunities", [])
     arbs = result.get("arbitrage", [])
 
-    print("\n=== Top 10 Trading Opportunities ===")
+    print("\n=== Trading Opportunities ===")
     for row in opps:
+        u = row.get("url") or ""
         print(
             f"  {row.get('rank')}. {row.get('question', '')[:60]} | "
             f"YES={row.get('yes_price', 0):.2f} NO={row.get('no_price', 0):.2f} | "
-            f"{row.get('reason', '')}"
+            f"{row.get('reason', '')} | {u}"
         )
 
-    print("\n=== Arbitrage Opportunities ===")
+    print("\n=== Arbitrage / Watchlist ===")
     for a in arbs:
+        u = a.get("url") or ""
         print(
-            f"  [{a.get('type')}] prob={a.get('total_probability')} "
-            f"profit={a.get('profit_potential_pct')}% | {a.get('details', '')}"
+            f"  {a.get('rank','')}. [{a.get('type')}] prob={a.get('total_probability')} "
+            f"profit={a.get('profit_potential_pct')}% | {a.get('details', '')} | {u}"
         )
 
 
@@ -110,14 +118,14 @@ def main() -> None:
     parser.add_argument(
         "--max-markets",
         type=int,
-        default=500,
-        help="Max markets to fetch (default 500)",
+        default=600,
+        help="Max markets to fetch (default 600)",
     )
     parser.add_argument(
         "--top",
         type=int,
-        default=10,
-        help="Number of top opportunities (default 10)",
+        default=5,
+        help="Number of top rows per table (default 5)",
     )
     args = parser.parse_args()
 
