@@ -1,79 +1,128 @@
-# Elyra
+# OpenClaw Agent / Elyra
 
-**Website:** [getelyra.xyz](https://getelyra.xyz)
+This repository contains the research pipeline and web client behind Elyra. The Python code in the repo root handles market intelligence and report generation, while [`Elyra/`](Elyra/README.md) contains the Next.js trading interface.
 
-Elyra is the **Multi Agentic Sovereign Autonomous Trading Hedge Fund**.
+## What this repo does
 
-## The Core Problem
+- Collects BTC, ETH, and SOL prices from Binance
+- Runs basic technical analysis with EMA and RSI
+- Summarizes Solana whale-transfer activity through Helius
+- Classifies crypto news sentiment from NewsData.io
+- Scans Polymarket for opportunities, clustering, and arbitrage/watchlist setups
+- Generates a final research report with Gemini, with a static fallback if no LLM key is configured
+- Ships a separate frontend in `Elyra/` for wallet-connected trading UX
 
-The global financial system has entered a phase of The Great Extraction. Wealth is systematically transferred from wage earners to asset owners through opaque leverage structures broadly grouped as shadow banking.
+## Repository layout
 
-Since the 2008 crisis, risk migrated from regulated bank balance sheets into less transparent private capital pools. The private credit market alone expanded to approximately $1.7T, while broader shadow-banking exposures scale far higher. During 2025, forensic credit analysis indicated default stress levels that challenge the narrative of institutional stability. The data exists, but it is trapped across fragmented filings, expensive terminals, and delayed disclosures.
+```text
+.
+|-- main.py                       # main backend CLI entrypoint
+|-- run.py                        # thin wrapper around main.py
+|-- agents/                       # market, quant, news, and on-chain agents
+|-- collectors/                   # API clients for Binance, Helius, and NewsData
+|-- analysis/                     # indicator calculations
+|-- research/                     # report synthesis and fallback reporting
+|-- skills/trade_research/        # Polymarket analysis pipeline
+|-- assets/                       # project screenshots and media
+|-- .env.example                  # backend environment template
+|-- requirements.txt              # Python dependencies
+`-- Elyra/                        # Next.js frontend
+```
 
-The consequence is not abstract. The debt machine shows up in daily life: housing, healthcare, and food supply chains become extraction surfaces. Gen Z faces a cost-of-living curve where wage growth cannot keep pace with engineered asset inflation.
+## Backend quick start
 
-## The Elyra Solution
+Python 3.10+ is recommended because the codebase uses modern type syntax such as `str | None`.
 
-Elyra is an agentic hedge fund stack built to weaponize transparency and decentralize capital aggregation. It replaces the traditional analyst-heavy model with autonomous capital swarms: specialized agents that run discovery, alpha generation, risk constraints, portfolio logic, and execution continuously.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python3 main.py
+```
 
-This is the shift from human throughput to machine-native capital operations. Humans define objectives and risk boundaries; autonomous agents run the loop at market speed.
+The backend needs network access for live API calls.
 
-Total Return = Sum((Win Rate * Profit) - (Loss Rate * Loss)) * Frequency
+## Backend configuration
 
-Win Rate = Cognitive Edge * Emotional Stability  
-Profit = Timing Judgment * Position Sizing  
-Loss Rate = Emotional Volatility * Execution Breakdown  
-Loss = Leverage Imbalance * Risk Control Deficiency
+Copy `.env.example` to `.env` and fill in the keys you want to enable:
 
-Elyra optimizes for net value realization:
+```bash
+cp .env.example .env
+```
 
-Net Value = edge captured - (slippage + fees + downtime + blowups + compliance and operations drag)
+| Variable | Used for | Required |
+| --- | --- | --- |
+| `HELIUS_API_KEY` | Solana on-chain whale activity | Optional |
+| `NEWSDATA_API_KEY` | Crypto headline collection and sentiment | Optional |
+| `GEMINI_API_KEY` | AI-written research reports | Optional |
 
-## Why This Is a New Category
+Notes:
 
-Retail and independent traders currently operate inside four structural frictions: fragmented tools, cognitive overload, execution slippage under stress, and time-bound earning capacity.
+- If `GEMINI_API_KEY` is missing, `research/synthesizer.py` falls back to a static report template.
+- `research/synthesizer.py` also accepts `GOOGLE_API_KEY` if you already use that name locally.
+- Missing `HELIUS_API_KEY` or `NEWSDATA_API_KEY` does not stop the whole pipeline; those sections are skipped or replaced with fallback output.
 
-Elyra collapses these frictions into one sovereign capital autonomy framework:
+## Backend usage
 
-- Secure execution through isolated trusted environments.
-- Venue-native execution across spot and perps rails.
-- Programmable agent coordination for negotiation, veto logic, and adaptive policy.
-- Solana-native capital formation primitives, including auction-style pooling.
+Run the full pipeline:
 
-The result is a one-person civilization model for capital: individuals can discover, allocate, execute, and compound without institutional overhead.
+```bash
+python3 main.py
+```
 
-## What Elyra Delivers
+That command runs six steps:
 
-Elyra integrates autonomous intelligence and execution primitives into one coherent capital stack:
+1. Market prices from Binance
+2. Quant analysis for `BTCUSDT`
+3. Solana whale-transfer summary
+4. News sentiment
+5. Polymarket opportunity scan
+6. Final report synthesis
 
-- Structured quant decision synthesis with enforced seven-section memo output and backend fallback hardening.
-- Real-time market intelligence from Dexscreener including price, liquidity, volume, market cap/FDV, and flow context.
-- On-chain token safety diagnostics across mint authority, freeze authority, supply, and decimals with RPC failover.
-- DEX-aware LP and concentration risk analysis, including Raydium and concentrated-liquidity heuristics.
-- Derivatives context ingestion through Drift data rails, including funding and open-interest regime context.
-- AI prediction context from market momentum and pair telemetry.
-- Prediction-market intelligence through DFlow and Kalshi-on-Solana datasets.
-- In-chat Jupiter execution with prefilled swap intents.
-- Privy wallet passthrough for authenticated user-bound execution.
-- Native terminal-grade decision UI with section cards, metric tables, confidence/risk bars, and value badges.
+Run only the Polymarket workflow:
 
-## The Shadow Map Agent
+```bash
+python3 main.py polymarket
+python3 main.py polymarket --json
+python3 main.py polymarket --top 10 --max-markets 800
+```
 
-The Shadow Map Agent is Elyra’s information-war layer against financial opacity.
+Run individual modules directly:
 
-It ingests SEC EDGAR and UCC disclosure streams, reconstructs debt and ownership graphs, computes rolling true default signals, and emits fund-level systemic risk scores. Public-facing transparency surfaces establish legibility. Institutional API products expose machine-readable high-conviction signals to professional users.
+```bash
+python3 agents/market_agent.py
+python3 agents/quant_agent.py ETHUSDT
+python3 agents/onchain_agent.py <solana_wallet_address>
+python3 agents/news_agent.py
+python3 -m skills.trade_research.trade_research --top 5 --json
+```
 
-This reverses the asymmetry model: opacity is no longer the moat.
+## Polymarket notes
 
-## The Open Claw Intelligence Stack
+- The trade-research pipeline prefers `sentence-transformers` for semantic clustering.
+- If that package or model is unavailable, the code falls back to a TF-IDF based clustering path.
+- The first semantic-clustering run may download a Hugging Face model into `.cache/huggingface/`.
 
-Elyra vertically integrates seven compounding domains under one coordination layer:
+## Frontend quick start
 
-Research, DeFi, Trading, Prediction Markets, Social Intelligence, Derivatives, and Open Claw Coordination.
+The `Elyra/` folder is a separate Next.js app.
 
-This is not a feature bundle. It is an integrated capital operating system.
+```bash
+cd Elyra
+npm install
+cp .env.example .env.local
+npm run dev
+```
 
-## Closing
+Open [http://localhost:3000](http://localhost:3000) after the dev server starts.
 
-Elyra’s end state is sovereign autonomous capital infrastructure.  
-Not better dashboards. Not better alerts. A new capital primitive.
+Frontend details and environment variables are documented in [`Elyra/README.md`](Elyra/README.md).
+
+## Troubleshooting
+
+- `ModuleNotFoundError: No module named 'dotenv'`: install backend dependencies with `pip install -r requirements.txt`.
+- On-chain analysis is skipped: check `HELIUS_API_KEY` or Helius quota limits.
+- News sentiment is skipped: check `NEWSDATA_API_KEY`.
+- Gemini report generation falls back to static output: check `GEMINI_API_KEY` and outbound network access.
+- Polymarket clustering is slower on first run: the embedding model may still be downloading.
