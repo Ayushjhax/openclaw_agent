@@ -120,7 +120,7 @@ export default function Navbar({
               width={36}
               height={36}
               priority
-              className="rounded-xl"
+              className="rounded-xl object-contain"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
           </div>

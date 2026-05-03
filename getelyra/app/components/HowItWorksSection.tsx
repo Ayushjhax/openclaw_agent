@@ -1,6 +1,7 @@
 'use client';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { Search, SlidersHorizontal, Zap, Link2, ShieldCheck, BarChart3 } from 'lucide-react';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -11,10 +12,66 @@ const fadeUp = {
 };
 
 const steps = [
-  { num: '01', title: 'Signal Acquisition', desc: 'Our agents continuously ingest market data, news, sentiment, and cross-asset correlations — building a living map of opportunity.' },
-  { num: '02', title: 'Pattern Recognition', desc: 'Deep learning models identify non-obvious patterns across timescales, filtering noise with surgical precision.' },
-  { num: '03', title: 'Strategy Formation', desc: 'Multi-agent deliberation synthesizes signals into trade theses, stress-tested against thousands of historical regimes.' },
-  { num: '04', title: 'Execution & Adaptation', desc: 'Positions are executed with optimal timing and continuously monitored. Agents adapt in real-time as conditions shift.' },
+  {
+    num: '01',
+    label: 'Discovery',
+    icon: Search,
+    accent: 'rgba(245,200,66,1)',
+    hex: '#F5C842',
+    accentBg: 'linear-gradient(135deg, rgba(245,200,66,0.32) 0%, rgba(245,200,66,0.08) 100%)',
+    title: 'Autonomous Signal Synthesis',
+    desc: 'Agents scan whale movements, liquidity shifts, and social sentiment across 10+ exchanges in real-time to surface what matters.',
+  },
+  {
+    num: '02',
+    label: 'Strategy',
+    icon: SlidersHorizontal,
+    accent: 'rgba(139,124,246,1)',
+    hex: '#8B7CF6',
+    accentBg: 'linear-gradient(135deg, rgba(139,124,246,0.32) 0%, rgba(139,124,246,0.08) 100%)',
+    title: 'Programmable Rules of Engagement',
+    desc: 'Define your boundaries — asset selection, exposure limits, and drawdown — and let agents operate 24/7 with zero emotional bias.',
+  },
+  {
+    num: '03',
+    label: 'Execution',
+    icon: Zap,
+    accent: 'rgba(59,130,246,1)',
+    hex: '#3B82F6',
+    accentBg: 'linear-gradient(135deg, rgba(59,130,246,0.32) 0%, rgba(59,130,246,0.08) 100%)',
+    title: 'Intent-Based Venue Routing',
+    desc: 'Orders are routed for optimal outcomes via Jupiter or HyperLiquid, ensuring sub-400ms latency and high-velocity settlement.',
+  },
+  {
+    num: '04',
+    label: 'Attribution',
+    icon: Link2,
+    accent: 'rgba(45,212,191,1)',
+    hex: '#2DD4BF',
+    accentBg: 'linear-gradient(135deg, rgba(45,212,191,0.32) 0%, rgba(45,212,191,0.08) 100%)',
+    title: 'Total Recursive Transparency',
+    desc: 'Every action is logged with its justification. Trace every decision back to the specific data stream and intent that triggered it.',
+  },
+  {
+    num: '05',
+    label: 'Verification',
+    icon: ShieldCheck,
+    accent: 'rgba(249,115,22,1)',
+    hex: '#F97316',
+    accentBg: 'linear-gradient(135deg, rgba(249,115,22,0.32) 0%, rgba(249,115,22,0.08) 100%)',
+    title: 'Institutional Live-Paper Parity',
+    desc: 'Rigorous cross-validation of strategy code against historical regimes, slippage modeling, and adversarial market scenarios.',
+  },
+  {
+    num: '06',
+    label: 'Post-Trade',
+    icon: BarChart3,
+    accent: 'rgba(244,63,94,1)',
+    hex: '#F43F5E',
+    accentBg: 'linear-gradient(135deg, rgba(244,63,94,0.32) 0%, rgba(244,63,94,0.08) 100%)',
+    title: 'Automated Capital Management',
+    desc: 'Real-time reconciliation and PnL attribution to ensure absolute sovereign control over every basis point moved.',
+  },
 ];
 
 export default function HowItWorksSection() {
@@ -24,7 +81,7 @@ export default function HowItWorksSection() {
   return (
     <section
       ref={ref}
-      style={{ background: 'black', padding: '10rem 1.5rem 14rem', position: 'relative', overflow: 'hidden' }}
+      style={{ background: 'black', padding: '8rem 1.5rem 10rem', position: 'relative', overflow: 'hidden' }}
     >
       {/* Ken Burns background image */}
       <motion.img
@@ -39,23 +96,21 @@ export default function HowItWorksSection() {
         }}
       />
 
-      {/* 7-stop gradient overlay */}
+      {/* Gradient overlays */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
         background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.4) 20%, transparent 38%, transparent 72%, rgba(0,0,0,0.6) 88%, black 100%)',
       }} />
-      {/* Side vignette */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
         background: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%)',
       }} />
-      {/* Dark wash */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.38)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.42)', pointerEvents: 'none' }} />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '64rem', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '72rem', margin: '0 auto', textAlign: 'center' }}>
         <motion.div custom={0} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
-          <span className="section-badge">How It Works</span>
+          <span className="section-badge">DSEA Engine</span>
         </motion.div>
 
         <motion.h2
@@ -75,7 +130,7 @@ export default function HowItWorksSection() {
           style={{
             fontFamily: "'Barlow', sans-serif", fontWeight: 300,
             fontSize: 'clamp(1rem, 2vw, 1.1rem)',
-            color: 'rgba(255,255,255,0.62)', lineHeight: 1.7,
+            color: 'rgba(255,255,255,0.55)', lineHeight: 1.7,
             margin: '0 auto 4rem', maxWidth: '42rem',
           }}
         >
@@ -83,58 +138,108 @@ export default function HowItWorksSection() {
           that feels precise, adaptive, and alive.
         </motion.p>
 
-        {/* Steps grid */}
+        {/* 6-box 3-column grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '1.5rem',
-          maxWidth: '56rem',
-          margin: '0 auto',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '1rem',
           textAlign: 'left',
-        }}>
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.num}
-              custom={i + 3} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-              style={{
-                borderRadius: '1.5rem', padding: '2rem',
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
-                backdropFilter: 'blur(40px)',
-                border: '1px solid rgba(255,255,255,0.09)',
-                boxShadow: '0 1px 0 rgba(255,255,255,0.08) inset, 0 20px 60px rgba(0,0,0,0.5)',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Shimmer line */}
-              <div style={{
-                position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px',
-                background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)',
-              }} />
-              <div style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-                fontSize: '0.8rem', color: 'rgba(255,255,255,0.25)',
-                marginBottom: '1rem', letterSpacing: '0.05em',
-              }}>
-                {step.num}
-              </div>
-              <div style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 500,
-                fontSize: '0.95rem', color: 'white', marginBottom: '0.75rem',
-              }}>
-                {step.title}
-              </div>
-              <p style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-                fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)',
-                lineHeight: 1.6, margin: 0,
-              }}>
-                {step.desc}
-              </p>
-            </motion.div>
-          ))}
+        }}
+          className="dsea-grid"
+        >
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            const a = (opacity: number) => step.accent.replace('1)', `${opacity})`);
+            return (
+              <motion.div
+                key={step.num}
+                custom={i + 3} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
+                whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+                className="glass-card"
+                style={{
+                  borderRadius: '1.25rem',
+                  padding: '1.6rem',
+                  cursor: 'default',
+                  border: `1px solid ${a(0.22)}`,
+                  transition: 'border-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = a(0.42); }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = a(0.22); }}
+              >
+                {/* Top accent shimmer */}
+                <div style={{
+                  position: 'absolute', top: 0, left: '8%', right: '8%', height: '1px',
+                  background: `linear-gradient(to right, transparent, ${a(0.65)}, transparent)`,
+                  pointerEvents: 'none',
+                }} />
+
+                {/* Header: label pill + number */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', position: 'relative' }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    padding: '0.22rem 0.7rem', borderRadius: '9999px',
+                    background: 'rgba(0,0,0,0.72)',
+                    border: `1px solid ${a(0.55)}`,
+                    backdropFilter: 'blur(8px)',
+                  }}>
+                    <span style={{
+                      fontFamily: "'Barlow', sans-serif", fontWeight: 700, fontSize: '0.6rem',
+                      letterSpacing: '0.16em', textTransform: 'uppercase',
+                      color: step.accent,
+                      textShadow: `0 0 8px ${a(0.5)}`,
+                    }}>{step.label}</span>
+                  </div>
+                  <span style={{
+                    fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+                    fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)',
+                    letterSpacing: '0.04em',
+                  }}>{step.num}</span>
+                </div>
+
+                {/* Icon box */}
+                <div style={{
+                  width: '2.6rem', height: '2.6rem',
+                  borderRadius: '0.75rem',
+                  background: `linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 100%)`,
+                  border: `1px solid ${a(0.4)}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: '1.1rem',
+                  boxShadow: `inset 0 1px 0 ${a(0.25)}, 0 2px 12px ${a(0.2)}`,
+                }}>
+                  <Icon size={16} color={step.accent} strokeWidth={2.2} />
+                </div>
+
+                {/* Title */}
+                <div style={{
+                  fontFamily: "'Instrument Serif', serif", fontStyle: 'italic',
+                  fontSize: '1.05rem', color: 'rgba(255,255,255,0.95)',
+                  marginBottom: '0.55rem', lineHeight: 1.25,
+                }}>
+                  {step.title}
+                </div>
+
+                {/* Description */}
+                <p style={{
+                  fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+                  fontSize: '0.82rem', color: 'rgba(255,255,255,0.58)',
+                  lineHeight: 1.65, margin: 0,
+                }}>
+                  {step.desc}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .dsea-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 580px) {
+          .dsea-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
   );
 }

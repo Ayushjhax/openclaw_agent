@@ -11,7 +11,17 @@ const fadeUp = {
   }),
 };
 
-const partners = ['Luminary', 'Celestia', 'Vaulted', 'Prism', 'Aura', 'Nocturne'];
+const lifecycleSteps = [
+  'Set the goal',
+  '24/7 Monitoring',
+  'Condition Triggered',
+  'Elyra HIL Reviews',
+  'Strategy Selected',
+  'Trade Goes Live On-chain',
+  'TP/SL Active',
+  'Alert Delivered',
+  'Capital Starts working while you sleep',
+];
 
 export default function IntroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -27,16 +37,16 @@ export default function IntroSection() {
       <img
         src="/image3.jpg"
         alt=""
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, pointerEvents: 'none', opacity: 0.5 }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, pointerEvents: 'none', opacity: 0.38 }}
       />
 
-      {/* Top/bottom gradient */}
+      {/* Strong top/bottom gradient for legibility */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'linear-gradient(to bottom, black 0%, transparent 18%, transparent 82%, black 100%)',
+        background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.55) 20%, rgba(0,0,0,0.45) 80%, black 100%)',
       }} />
       {/* Dark wash */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.28)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.52)', pointerEvents: 'none' }} />
 
       {/* Floating dust */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
@@ -44,9 +54,9 @@ export default function IntroSection() {
       </div>
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 3, maxWidth: '48rem', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 3, maxWidth: '52rem', margin: '0 auto', textAlign: 'center' }}>
         <motion.div custom={0} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
-          <span className="section-badge">Trusted by modern funds</span>
+          <span className="section-badge">How Elyra runs your capital</span>
         </motion.div>
 
         <motion.h2
@@ -58,8 +68,7 @@ export default function IntroSection() {
             color: 'white', margin: '0 0 1.5rem',
           }}
         >
-          Intelligence that feels like a force,{' '}
-          <br />not a formula.
+          Dismantling Information Asymmetry<br />through Agentic Intelligence.
         </motion.h2>
 
         <motion.p
@@ -67,32 +76,97 @@ export default function IntroSection() {
           style={{
             fontFamily: "'Barlow', sans-serif", fontWeight: 300,
             fontSize: 'clamp(1rem, 2vw, 1.125rem)',
-            color: 'rgba(255,255,255,0.62)', lineHeight: 1.7,
-            margin: '0 0 3rem',
+            color: 'rgba(255,255,255,0.65)', lineHeight: 1.7,
+            margin: '0 0 3.5rem',
           }}
         >
-          We build financial intelligence that transcends the ordinary —<br />
-          adaptive, precise, and unmistakably yours.
+          We build sovereign capital infrastructure that captures structural alpha —<br />
+          adaptive, precise, and vertically integrated across every market domain.
         </motion.p>
 
+        {/* Lifecycle pipeline — horizontal scroll on mobile */}
         <motion.div
           custom={3} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '2rem' }}
+          style={{ position: 'relative' }}
         >
-          {partners.map((p) => (
-            <span
-              key={p}
-              style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-                fontSize: '0.875rem', letterSpacing: '0.12em',
-                textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)',
-              }}
-            >
-              {p}
-            </span>
-          ))}
+          {/* Left fade edge */}
+          <div style={{
+            position: 'absolute', left: 0, top: 0, bottom: 0, width: '3.5rem', zIndex: 2, pointerEvents: 'none',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.9), transparent)',
+          }} />
+          {/* Right fade edge */}
+          <div style={{
+            position: 'absolute', right: 0, top: 0, bottom: 0, width: '3.5rem', zIndex: 2, pointerEvents: 'none',
+            background: 'linear-gradient(to left, rgba(0,0,0,0.9), transparent)',
+          }} />
+
+          {/* Thin accent progress line behind chips */}
+          <div style={{
+            position: 'absolute', top: '50%', left: '3.5rem', right: '3.5rem',
+            height: '1px', zIndex: 0,
+            background: 'linear-gradient(to right, rgba(245,200,66,0.12), rgba(45,212,191,0.12), rgba(245,200,66,0.12))',
+            transform: 'translateY(-50%)',
+          }} />
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            WebkitOverflowScrolling: 'touch',
+            padding: '1.25rem 3.5rem',
+            gap: 0,
+            position: 'relative',
+            zIndex: 1,
+          }}>
+            {lifecycleSteps.flatMap((step, i) => [
+              <motion.div
+                key={`step-${i}`}
+                custom={i + 4}
+                variants={fadeUp}
+                initial="hidden"
+                animate={inView ? 'visible' : 'hidden'}
+                style={{ flexShrink: 0, scrollSnapAlign: 'center' }}
+              >
+                <div
+                  className="liquid-glass"
+                  style={{
+                    padding: '0.45rem 1rem',
+                    borderRadius: '9999px',
+                    fontFamily: "'Barlow', sans-serif",
+                    fontWeight: i === lifecycleSteps.length - 1 ? 500 : 400,
+                    fontSize: '0.8rem',
+                    color: i === lifecycleSteps.length - 1 ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.78)',
+                    whiteSpace: 'nowrap',
+                    borderColor: i === lifecycleSteps.length - 1 ? 'rgba(245,200,66,0.3)' : undefined,
+                  }}
+                >
+                  {step}
+                </div>
+              </motion.div>,
+              i < lifecycleSteps.length - 1 ? (
+                <div
+                  key={`sep-${i}`}
+                  style={{
+                    flexShrink: 0,
+                    width: '1.25rem',
+                    height: '1px',
+                    alignSelf: 'center',
+                    margin: '0 0.15rem',
+                    background: 'linear-gradient(to right, transparent, rgba(245,200,66,0.4), transparent)',
+                    opacity: 0.9,
+                  }}
+                  aria-hidden
+                />
+              ) : null,
+            ])}
+          </div>
         </motion.div>
       </div>
+
+      <style>{`
+        div::-webkit-scrollbar { display: none; }
+      `}</style>
     </section>
   );
 }

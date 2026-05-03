@@ -10,7 +10,7 @@ export default function Footer() {
       textAlign: 'center',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-        <Image src="/logo.png" alt="Elyra" width={22} height={22} style={{ borderRadius: '50%', objectFit: 'cover' }} />
+        <Image src="/logo.png" alt="Elyra" width={22} height={22} style={{ borderRadius: '6px', objectFit: 'contain' }} />
         <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: '1.1rem', color: 'white' }}>
           Elyra
         </span>

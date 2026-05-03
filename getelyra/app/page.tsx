@@ -4,6 +4,7 @@ import HeroSection from './components/HeroSection';
 import IntroSection from './components/IntroSection';
 import HowItWorksSection from './components/HowItWorksSection';
 import FeaturesSection from './components/FeaturesSection';
+import FAQSection from './components/FAQSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 
@@ -17,6 +18,7 @@ export default function Home() {
       <IntroSection />
       <HowItWorksSection />
       <FeaturesSection />
+      <FAQSection />
       <CTASection />
       <Footer />
     </>
