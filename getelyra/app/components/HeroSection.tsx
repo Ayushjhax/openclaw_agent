@@ -1,5 +1,4 @@
 'use client';
-import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowUpRight, Play } from 'lucide-react';
 import SwayCanvas from './SwayCanvas';
@@ -8,25 +7,25 @@ import ParticleCanvas from './ParticleCanvas';
 import ParticleTitle from './ParticleTitle';
 
 export default function HeroSection() {
-  /* Scroll target must be a non-static box — inner div avoids <section> edge cases with useScroll */
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
-  const y = useTransform(scrollYProgress, [0, 0.6], [0, 45]);
-  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  /* Window scroll only — avoids useScroll({ target }) “non-static container” warnings */
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 520], [0, 45], { clamp: true });
+  const opacity = useTransform(scrollY, [0, 520], [1, 0.55], { clamp: true });
 
   return (
-    <section aria-label="Hero" style={{ margin: 0, padding: 0 }}>
-      <div
-        ref={sectionRef}
-        className="hero-section"
-        style={{
-          position: 'relative',
-          isolation: 'isolate',
-          background: 'black',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
+    <section
+      aria-label="Hero"
+      className="hero-section"
+      style={{
+        position: 'relative',
+        isolation: 'isolate',
+        background: 'black',
+        overflow: 'hidden',
+        width: '100%',
+        margin: 0,
+        padding: 0,
+      }}
+    >
       {/* Background layer */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
         <motion.div
@@ -285,7 +284,6 @@ export default function HeroSection() {
           }
         }
       `}</style>
-      </div>
     </section>
   );
 }
