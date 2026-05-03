@@ -4,6 +4,15 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 
+const NAV_LINKS = [
+  { label: 'Documentation', href: 'https://docs.getelyra.xyz/' },
+  { label: 'Twitter', href: 'https://x.com/getelyra' },
+  {
+    label: 'White Paper',
+    href: 'https://docs.google.com/document/d/10vgg3cK0_kyERzIFd9kajhBCMFrH5nRkD8tFJpXahtQ/edit?usp=sharing',
+  },
+] as const;
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -55,10 +64,12 @@ export default function Navbar() {
 
         {/* Column 2: Nav links (centred) */}
         <div className="elyra-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', justifyContent: 'center' }}>
-          {['Documentation', 'Twitter', 'White Paper', ''].map((link) => (
+          {NAV_LINKS.map(({ label, href }) => (
             <a
-              key={link}
-              href="#"
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 fontFamily: "'Barlow', sans-serif",
                 fontWeight: 400,
@@ -71,7 +82,7 @@ export default function Navbar() {
               onMouseEnter={(e) => (e.currentTarget.style.color = 'white')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.72)')}
             >
-              {link}
+              {label}
             </a>
           ))}
         </div>

@@ -37,16 +37,19 @@ export default function IntroSection() {
       <img
         src="/image3.jpg"
         alt=""
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, pointerEvents: 'none', opacity: 0.38 }}
+        style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, pointerEvents: 'none',
+          opacity: 0.52,
+          filter: 'brightness(1.12) contrast(1.05)',
+        }}
       />
 
-      {/* Strong top/bottom gradient for legibility */}
+      {/* Top/bottom gradient — keep text readable but let the photo show */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.55) 20%, rgba(0,0,0,0.45) 80%, black 100%)',
+        background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.38) 22%, rgba(0,0,0,0.28) 78%, black 100%)',
       }} />
-      {/* Dark wash */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.52)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.34)', pointerEvents: 'none' }} />
 
       {/* Floating dust */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>

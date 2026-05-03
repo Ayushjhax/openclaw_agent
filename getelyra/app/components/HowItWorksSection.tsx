@@ -93,19 +93,20 @@ export default function HowItWorksSection() {
           position: 'absolute', inset: 0, width: '100%', height: '100%',
           objectFit: 'cover', objectPosition: 'center center',
           transformOrigin: 'center center', zIndex: 0,
+          filter: 'brightness(1.22) contrast(1.05)',
         }}
       />
 
-      {/* Gradient overlays */}
+      {/* Gradient overlays — lighter than before so the photo reads through */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.75) 10%, rgba(0,0,0,0.4) 20%, transparent 38%, transparent 72%, rgba(0,0,0,0.6) 88%, black 100%)',
+        background: 'linear-gradient(to bottom, black 0%, rgba(0,0,0,0.44) 10%, rgba(0,0,0,0.16) 20%, transparent 38%, transparent 72%, rgba(0,0,0,0.38) 88%, black 100%)',
       }} />
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
         background: 'linear-gradient(to right, black 0%, transparent 18%, transparent 82%, black 100%)',
       }} />
-      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.42)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'rgba(0,0,0,0.2)', pointerEvents: 'none' }} />
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 2, maxWidth: '72rem', margin: '0 auto', textAlign: 'center' }}>

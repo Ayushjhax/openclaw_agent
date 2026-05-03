@@ -181,7 +181,10 @@ export default function HeroSection() {
             >
               Request Access <ArrowUpRight size={16} />
             </a>
-            <button
+            <a
+              href="https://youtu.be/aHHKlnN1ThQ"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                 padding: '0.75rem 1.75rem', borderRadius: '9999px',
@@ -190,12 +193,13 @@ export default function HeroSection() {
                 border: '1px solid rgba(255,255,255,0.15)',
                 background: 'transparent', cursor: 'pointer',
                 transition: 'color 0.2s, border-color 0.2s',
+                textDecoration: 'none',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
             >
-              <Play size={14} /> Watch Overview
-            </button>
+              <Play size={14} /> Watch preview
+            </a>
           </motion.div>
         </div>
       </motion.div>
@@ -243,8 +247,7 @@ export default function HeroSection() {
             align-items: center;
             gap: 0.6rem;
           }
-          .hero-ctas a,
-          .hero-ctas button {
+          .hero-ctas a {
             width: 100%;
             max-width: 18rem;
             justify-content: center;
@@ -278,7 +281,7 @@ export default function HeroSection() {
             margin: 0.5rem auto 1.25rem !important;
             font-size: 0.85rem !important;
           }
-          .hero-ctas a, .hero-ctas button {
+          .hero-ctas a {
             padding: 0.6rem 1.4rem !important;
             font-size: 0.85rem !important;
           }
