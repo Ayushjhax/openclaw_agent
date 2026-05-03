@@ -3,10 +3,10 @@ import { useState, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1, y: 0,
-    transition: { duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    transition: { duration: 0.72, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   }),
 };
 
@@ -41,47 +41,86 @@ const faqs = [
   },
 ];
 
-function FAQItem({ question, answer, defaultOpen = false }: { question: string; answer: string; defaultOpen?: boolean }) {
+function FAQItem({ question, answer, index, defaultOpen = false }: {
+  question: string; answer: string; index: number; defaultOpen?: boolean;
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const num = String(index + 1).padStart(2, '0');
 
   return (
     <div
-      className="glass-card"
       style={{
+        position: 'relative',
+        background: isOpen ? 'rgba(255,255,255,0.038)' : 'transparent',
+        backdropFilter: isOpen ? 'blur(20px)' : 'none',
+        WebkitBackdropFilter: isOpen ? 'blur(20px)' : 'none',
         borderRadius: '0.875rem',
+        border: isOpen ? '1px solid rgba(255,255,255,0.11)' : '1px solid transparent',
+        transition: 'background 0.35s ease, border-color 0.35s ease',
         overflow: 'hidden',
-        transition: 'border-color 0.2s',
       }}
     >
+      {/* shimmer line when open */}
+      <div style={{
+        position: 'absolute', top: 0, left: '8%', right: '8%', height: '1px',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
+        opacity: isOpen ? 1 : 0,
+        transition: 'opacity 0.35s ease',
+        pointerEvents: 'none',
+      }} />
+
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          width: '100%', padding: '1.25rem 1.5rem',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem',
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: '2rem 1fr 2rem',
+          alignItems: 'flex-start',
+          gap: '1rem',
+          padding: '1.375rem 1.375rem',
           background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
         }}
       >
         <span style={{
+          fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+          fontSize: '0.6rem', letterSpacing: '0.08em',
+          color: isOpen ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)',
+          paddingTop: '0.2rem',
+          transition: 'color 0.3s',
+        }}>
+          {num}
+        </span>
+
+        <span style={{
           fontFamily: "'Instrument Serif', serif", fontStyle: 'italic',
-          fontWeight: 400, fontSize: '1.05rem', color: 'white', lineHeight: 1.35,
+          fontSize: 'clamp(0.975rem, 2vw, 1.08rem)',
+          color: isOpen ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.75)',
+          lineHeight: 1.4,
+          transition: 'color 0.3s',
         }}>
           {question}
         </span>
+
         <div style={{
-          flexShrink: 0, width: 24, height: 24,
+          width: 26, height: 26, borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: isOpen ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          transition: 'background 0.3s',
+          marginTop: '0.1rem',
+          justifySelf: 'end',
         }}>
           <svg
             style={{
-              width: 18, height: 18,
-              transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-              transition: 'transform 0.25s ease',
-              color: 'rgba(255,255,255,0.5)',
+              width: 11, height: 11,
+              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.32s cubic-bezier(0.16,1,0.3,1)',
+              color: isOpen ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)',
             }}
-            fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" strokeWidth={2.5}
+            strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"
           >
-            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" />
-            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" />
+            <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
       </button>
@@ -89,21 +128,26 @@ function FAQItem({ question, answer, defaultOpen = false }: { question: string; 
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            key="answer"
+            key="body"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
             style={{ overflow: 'hidden' }}
           >
             <div style={{
-              padding: '0 1.5rem 1.25rem',
+              display: 'grid',
+              gridTemplateColumns: '2rem 1fr 2rem',
+              gap: '1rem',
+              padding: '0 1.375rem 1.5rem',
               borderTop: '1px solid rgba(255,255,255,0.05)',
             }}>
+              <div />
               <p style={{
                 fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-                fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)',
-                lineHeight: 1.75, margin: '1rem 0 0',
+                fontSize: 'clamp(0.86rem, 1.8vw, 0.94rem)',
+                color: 'rgba(255,255,255,0.48)',
+                lineHeight: 1.82, margin: '1rem 0 0',
                 whiteSpace: 'pre-line',
               }}>
                 {answer}
@@ -125,79 +169,87 @@ export default function FAQSection() {
       ref={ref}
       style={{
         background: 'black',
-        padding: '7rem 1.5rem 8rem',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
+        padding: '9rem 1.5rem 11rem',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: '56rem', margin: '0 auto' }}>
+      {/* Ambient orbs */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', left: '-12%', top: '15%',
+          width: '50vw', height: '50vw', borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(245,200,66,0.038) 0%, transparent 68%)',
+          filter: 'blur(50px)',
+        }} />
+        <div style={{
+          position: 'absolute', right: '-10%', bottom: '10%',
+          width: '42vw', height: '42vw', borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(120,160,255,0.032) 0%, transparent 68%)',
+          filter: 'blur(50px)',
+        }} />
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '52rem', margin: '0 auto' }}>
+
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <motion.div custom={0} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '0.5rem 1.25rem', marginBottom: '2rem',
-              background: 'rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '9999px',
-            }}>
-              <span style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 500,
-                fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)',
-                letterSpacing: '0.03em',
-              }}>
-                Frequently Asked Questions
-              </span>
-            </div>
+        <div style={{ textAlign: 'center', marginBottom: '5.5rem' }}>
+          <motion.div custom={0} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
+            style={{ marginBottom: '1.75rem' }}>
+            <span className="section-badge">Frequently Asked Questions</span>
           </motion.div>
 
-          <motion.h2
-            custom={1} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-            style={{ margin: '0 0 1.25rem' }}
-          >
-            <span style={{
-              fontFamily: "'Space Grotesk', 'Barlow', sans-serif", fontWeight: 700,
-              fontSize: 'clamp(2.75rem, 7vw, 5rem)',
-              color: 'white', letterSpacing: '-0.04em', lineHeight: 0.9,
-            }}>
-              Command your capital{' '}
-            </span>
-            <span style={{
-              fontFamily: "'Great Vibes', 'Instrument Serif', serif", fontStyle: 'italic',
-              fontWeight: 400,
-              fontSize: 'clamp(3.25rem, 8vw, 6rem)',
-              color: 'white', lineHeight: 0.9,
-            }}>
-              Swarm
-            </span>
-          </motion.h2>
+          <motion.div custom={1} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
+            <h2 style={{ margin: '0', lineHeight: 1 }}>
+              <span style={{
+                display: 'block',
+                fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700,
+                fontSize: 'clamp(2.5rem, 6.5vw, 4.75rem)',
+                color: 'white', letterSpacing: '-0.04em', lineHeight: 0.92,
+              }}>
+                Command your capital
+              </span>
+              <span style={{
+                display: 'block',
+                fontFamily: "'Great Vibes', serif",
+                fontSize: 'clamp(3rem, 8vw, 6rem)',
+                color: 'white', lineHeight: 1.05,
+              }}>
+                Swarm
+              </span>
+            </h2>
+          </motion.div>
 
-          <motion.p
-            custom={2} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
+          <motion.div custom={2} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
+            style={{ margin: '1.75rem auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem' }}>
+            <div style={{ width: '2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18))' }} />
+            <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.22)' }} />
+            <div style={{ width: '2.5rem', height: '1px', background: 'linear-gradient(90deg, rgba(255,255,255,0.18), transparent)' }} />
+          </motion.div>
+
+          <motion.p custom={3} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
             style={{
               fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-              fontSize: 'clamp(1rem, 2vw, 1.1rem)',
-              color: 'rgba(255,255,255,0.5)', lineHeight: 1.75,
-              maxWidth: '38rem', margin: '0 auto',
-            }}
-          >
+              fontSize: 'clamp(0.925rem, 2vw, 1.025rem)',
+              color: 'rgba(255,255,255,0.42)', lineHeight: 1.82,
+              maxWidth: '34rem', margin: '0 auto',
+            }}>
             The autonomous stack for high-frequency financial sovereignty — learn how{' '}
             <span style={{ color: 'rgba(255,255,255,0.75)', fontWeight: 400 }}>Elyra</span>{' '}
             makes trading smooth, smart, and seriously powerful.
           </motion.p>
         </div>
 
-        {/* FAQ accordion */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {/* Accordion */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
           {faqs.map((faq, i) => (
-            <motion.div
-              key={i}
-              custom={i + 3} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-            >
-              <FAQItem question={faq.q} answer={faq.a} defaultOpen={i === 0} />
+            <motion.div key={i} custom={i + 4} variants={fadeUp} initial="hidden" animate={inView ? 'visible' : 'hidden'}>
+              <FAQItem question={faq.q} answer={faq.a} index={i} defaultOpen={i === 0} />
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );

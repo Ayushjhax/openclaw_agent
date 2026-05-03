@@ -1,34 +1,124 @@
 'use client';
 import Image from 'next/image';
 
+const navLinks = [
+  { label: 'Intelligence', href: '#' },
+  { label: 'Capabilities', href: '#' },
+  { label: 'FAQ', href: '#' },
+  { label: 'Article', href: 'https://medium.com/@ayushkmrjha/how-personal-ai-trading-agents-will-shatter-human-limits-and-redefine-alpha-in-the-agentic-economy-da49d8a22929' },
+];
+
 export default function Footer() {
   return (
     <footer style={{
       background: 'black',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
-      padding: '3rem 1.5rem',
-      textAlign: 'center',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-        <Image src="/logo.png" alt="Elyra" width={22} height={22} style={{ borderRadius: '6px', objectFit: 'contain' }} />
-        <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', fontSize: '1.1rem', color: 'white' }}>
-          Elyra
-        </span>
+      {/* Top gradient border */}
+      <div style={{
+        height: '1px',
+        background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.12) 70%, transparent 100%)',
+      }} />
+
+      {/* Ambient glow */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{
+          position: 'absolute', left: '50%', top: '-20%',
+          transform: 'translateX(-50%)',
+          width: '60vw', height: '40vw', borderRadius: '50%',
+          background: 'radial-gradient(ellipse, rgba(255,255,255,0.018) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+        }} />
       </div>
-      <p style={{
-        fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-        fontSize: '0.85rem', color: 'rgba(255,255,255,0.38)',
-        margin: '0 0 0.5rem',
-      }}>
-        Multi-agentic intelligence for the extraordinary.
-      </p>
-      <p style={{
-        fontFamily: "'Barlow', sans-serif", fontWeight: 300,
-        fontSize: '0.75rem', color: 'rgba(255,255,255,0.22)',
-        margin: 0,
-      }}>
-        © 2025 Elyra. All rights reserved.
-      </p>
+
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '64rem', margin: '0 auto', padding: '3.5rem 1.5rem 0' }}>
+
+        {/* Main row */}
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '2rem',
+          paddingBottom: '2.5rem',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          {/* Brand */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Image
+                src="/logo.png" alt="Elyra"
+                width={20} height={20}
+                style={{ borderRadius: '5px', objectFit: 'contain' }}
+              />
+              <span style={{
+                fontFamily: "'Instrument Serif', serif", fontStyle: 'italic',
+                fontSize: '1.1rem', color: 'white',
+              }}>
+                Elyra
+              </span>
+            </div>
+            <p style={{
+              fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+              fontSize: '0.82rem', color: 'rgba(255,255,255,0.32)',
+              margin: 0, maxWidth: '18rem', lineHeight: 1.6,
+            }}>
+              Multi-agentic intelligence for the extraordinary.
+            </p>
+          </div>
+
+          {/* Nav links */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+            {navLinks.map((link, i) => (
+              <a
+                key={i}
+                href={link.href}
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                style={{
+                  fontFamily: "'Barlow', sans-serif", fontWeight: 400,
+                  fontSize: '0.8rem', letterSpacing: '0.04em',
+                  color: 'rgba(255,255,255,0.35)',
+                  textDecoration: 'none',
+                  padding: '0.375rem 0.75rem',
+                  borderRadius: '9999px',
+                  transition: 'color 0.2s, background 0.2s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.8)';
+                  (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.35)';
+                  (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '0.75rem',
+          padding: '1.25rem 0 2rem',
+        }}>
+          <p style={{
+            fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+            fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)',
+            margin: 0, letterSpacing: '0.02em',
+          }}>
+            © 2025 Elyra. All rights reserved.
+          </p>
+          <p style={{
+            fontFamily: "'Instrument Serif', serif", fontStyle: 'italic',
+            fontSize: '0.78rem', color: 'rgba(255,255,255,0.16)',
+            margin: 0,
+          }}>
+            Built for the extraordinary.
+          </p>
+        </div>
+      </div>
     </footer>
   );
 }
