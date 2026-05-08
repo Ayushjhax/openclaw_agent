@@ -65,7 +65,7 @@ The operational core of Elyra is the **DSEA Engine** — a four-phase loop that 
 
 **Strategy.** The user defines the rules of engagement: asset universe, maximum exposure, drawdown tolerance, entry and exit conditions. Within those parameters, Elyra operates with identical discipline at 3 AM during a volatility spike as it does during normal market hours. It does not fatigue, anchor to prior positions, or deviate under pressure.
 
-**Execution.** Order routing is optimized for outcome, not convenience. Spot aggregation runs through Jupiter. Perpetuals route to HyperLiquid (229 markets, up to 50x leverage) or Donut Perps (20 markets, up to 150x). Prediction market positions execute via Polymarket and DFlow. Venue selection, slippage minimization, and partial-fill handling are governed — not delegated to the user.
+**Execution.** Order routing is optimized for outcome, not convenience. Spot aggregation runs through Jupiter. Perpetuals route to HyperLiquid (229 markets, up to 50x leverage) or Elyra Perps (20 markets, up to 150x). Prediction market positions execute via Polymarket and DFlow. Venue selection, slippage minimization, and partial-fill handling are governed — not delegated to the user.
 
 **Attribution.** Every action generates a permanent, traceable record: what was executed, what signal triggered it, what it cost, and what the outcome was. Most systems are opaque post-execution. Elyra's attribution layer closes that gap, enabling strategy refinement that compounds over time.
 
@@ -92,7 +92,7 @@ SCAN    Market Intelligence
 
 EXECUTE Order Flow
         Solana spot via Jupiter aggregation (best-price routing)
-        Donut Perps — 20 markets · up to 150x leverage
+        Elyra Perps — 20 markets · up to 150x leverage
         HyperLiquid — 229 markets · up to 50x leverage
         Market · limit · conditional · TP/SL attached orders
         Cross-chain bridging: SOL + 6 EVM networks
