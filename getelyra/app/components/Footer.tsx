@@ -1,13 +1,6 @@
 'use client';
 import Image from 'next/image';
 
-const navLinks = [
-  { label: 'Intelligence', href: '#' },
-  { label: 'Capabilities', href: '#' },
-  { label: 'FAQ', href: '#' },
-  { label: 'Article', href: 'https://medium.com/@ayushkmrjha/how-personal-ai-trading-agents-will-shatter-human-limits-and-redefine-alpha-in-the-agentic-economy-da49d8a22929' },
-];
-
 export default function Footer() {
   return (
     <footer style={{
@@ -64,37 +57,6 @@ export default function Footer() {
               Multi-agentic intelligence for the extraordinary.
             </p>
           </div>
-
-          {/* Nav links */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
-            {navLinks.map((link, i) => (
-              <a
-                key={i}
-                href={link.href}
-                target={link.href.startsWith('http') ? '_blank' : undefined}
-                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                style={{
-                  fontFamily: "'Barlow', sans-serif", fontWeight: 400,
-                  fontSize: '0.8rem', letterSpacing: '0.04em',
-                  color: 'rgba(255,255,255,0.35)',
-                  textDecoration: 'none',
-                  padding: '0.375rem 0.75rem',
-                  borderRadius: '9999px',
-                  transition: 'color 0.2s, background 0.2s',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.8)';
-                  (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.35)';
-                  (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
         </div>
 
         {/* Bottom bar */}
