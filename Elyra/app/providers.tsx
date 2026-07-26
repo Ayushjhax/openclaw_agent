@@ -39,7 +39,9 @@ function InviteRouteGuard({ children }: { children: React.ReactNode }) {
       window.localStorage.getItem(INVITE_UNLOCK_KEY) === "true";
 
     if (unlockedNow !== isUnlocked) {
-      setIsUnlocked(unlockedNow);
+      queueMicrotask(() => {
+        setIsUnlocked(unlockedNow);
+      });
     }
 
     if (!unlockedNow && pathname !== "/invite") {

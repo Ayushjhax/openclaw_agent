@@ -694,7 +694,7 @@ export default function InviteCodePage() {
                 {/* Request invite */}
                 <div className="text-center animate-fade-up-7">
                   <p className="text-white/25 text-xs font-mono mb-2">
-                    Don't have an invite?
+                    Don&apos;t have an invite?
                   </p>
                   <a
                     href="https://getelyra.xyz"

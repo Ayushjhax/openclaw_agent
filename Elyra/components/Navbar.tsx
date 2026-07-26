@@ -1,7 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { Eye, EyeOff, Wallet, LogOut, Copy, Check, Zap } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Wallet,
+  LogOut,
+  Copy,
+  Check,
+  Zap,
+  Settings,
+} from "lucide-react";
 import WalletMenu from "@/components/WalletMenu";
 import { useState } from "react";
 
@@ -30,6 +39,7 @@ type NavbarProps = {
   userName?: string;
   solAddress?: string;
   onLogout: () => void;
+  onOpenConnectedAccounts: () => void;
 };
 
 export default function Navbar({
@@ -52,6 +62,7 @@ export default function Navbar({
   userName,
   solAddress,
   onLogout,
+  onOpenConnectedAccounts,
 }: NavbarProps) {
   const [copied, setCopied] = useState(false);
   const shortSolAddress =
@@ -316,6 +327,18 @@ export default function Navbar({
                         </div>
                       </button>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onProfileMenuOpenChange(false);
+                        onOpenConnectedAccounts();
+                      }}
+                      className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/80 transition-all duration-300 hover:border-emerald-400/35 hover:bg-emerald-500/10 hover:text-white hover:shadow-lg hover:shadow-emerald-500/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-white/70"
+                    >
+                      <Settings size={15} aria-hidden="true" />
+                      <span>Connected Accounts</span>
+                    </button>
 
                     {/* Logout Button */}
                     <button

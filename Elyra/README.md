@@ -39,6 +39,13 @@ These appear in `.env.example` and power optional integrations:
 | `DEXSCREENER_BASE_URL` | Dexscreener API override |
 | `DRIFT_DATA_API_BASE_URL` | Drift data API override |
 | `DFLOW_PREDICTION_MARKETS_BASE_URL` | DFlow prediction markets API override |
+| `MASTERCARD_PARTNER_ID` | Server-side Mastercard Open Finance partner ID |
+| `MASTERCARD_APP_KEY` / `MASTERCARD_APP_NAME` | Server-side Mastercard app key/name header value |
+| `MASTERCARD_PARTNER_SECRET` | Server-side Mastercard partner secret |
+| `MASTERCARD_ENCRYPTION_KEY` | 32-byte key used to encrypt stored Mastercard identifiers |
+| `MASTERCARD_CONNECT_REDIRECT_URI` | Mastercard Connect return URL |
+
+Never prefix Mastercard secrets with `NEXT_PUBLIC_`; those values must not be exposed to the browser.
 
 ## Useful scripts
 
@@ -55,6 +62,10 @@ npm run lint
 - `app/providers.tsx`: Privy setup and invite-route guard
 - `app/api/assistant/chat/route.ts`: assistant backend, Gemini integration, and data helpers
 - `components/`: terminal, assistant, chart, wallet, and modal UI components
+- `services/mastercard/`: Mastercard Open Finance service, local repository, encryption, rate limiting, and audit helpers
+- `services/agents/financial-data-agent.ts`: cash-flow insights agent backed by linked bank data
+- `database/mastercard_open_finance.sql`: production Postgres schema for Mastercard data
+- `docs/mastercard-open-finance-integration.md`: integration plan and deployment checklist
 
 ## Notes
 

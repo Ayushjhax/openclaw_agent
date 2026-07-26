@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getMint, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { AiPredictionResult, getAiPricePrediction } from "@/lib/ai-price-prediction";
+import { runFinancialDataAgent } from "@/services/agents/financial-data-agent";
+import type { FinancialDataAgentResult } from "@/services/mastercard/types";
 import {
   DFlowMarket,
   getActivePredictionMarkets,
@@ -46,6 +48,7 @@ const TOKEN_MAP: Record<string, { symbol: string; mint: string; decimals: number
 
 type AssistantRequest = {
   prompt?: string;
+  appUserId?: string | null;
   walletAddress?: string | null;
   solPrice?: number;
   solBalance?: number;
@@ -64,6 +67,10 @@ function isPredictionIntent(prompt: string): boolean {
 
 function isPredictionMarketIntent(prompt: string): boolean {
   return /\b(prediction market|kalshi|dflow)\b/i.test(prompt);
+}
+
+function isPersonalFinanceIntent(prompt: string): boolean {
+  return /\b(bank|checking|savings|cash\s*flow|spending|spent|expense|expenses|subscription|subscriptions|burn|savings rate|income|paycheck|transactions?|balance|net worth|budget|allocate|allocation|portfolio recommendation)\b/i.test(prompt);
 }
 
 function extractPredictionRequest(prompt: string): { token: string; hours: number } {
@@ -1167,6 +1174,7 @@ async function askGemini(
   solPrice?: number,
   swapHistory?: AssistantRequest["swapHistory"],
   marketSkillContext?: MarketSkillContext,
+  financialDataContext?: FinancialDataAgentResult,
 ) {
   const apiKey =
     process.env.GEMINI_API_KEY ??
@@ -1185,6 +1193,29 @@ async function askGemini(
       recentSwaps: swapHistory ?? [],
       supportedPairs: Object.keys(TOKEN_MAP),
       marketSkillContext,
+      financialDataContext: financialDataContext
+        ? {
+            accounts: financialDataContext.accounts.map((account) => ({
+              name: account.name,
+              type: account.type,
+              status: account.status,
+              mask: account.mask,
+            })),
+            balances: financialDataContext.balances.map((balance) => ({
+              currentBalance: balance.currentBalance,
+              availableBalance: balance.availableBalance,
+              currency: balance.currency,
+              asOf: balance.asOf,
+            })),
+            cashFlow: financialDataContext.cashFlow,
+            netWorth: financialDataContext.netWorth,
+            subscriptions: financialDataContext.subscriptions,
+            unusualExpenses: financialDataContext.unusualExpenses.slice(0, 5),
+            insights: financialDataContext.insights,
+            portfolioRecommendations:
+              financialDataContext.portfolioRecommendations,
+          }
+        : null,
       instructions: [
         "Focus only on Solana market context.",
         "Skill 1: Market Analysis is enabled. Use Dexscreener-derived context for real-time price, volume, liquidity, market cap, and computed safety score.",
@@ -1195,6 +1226,8 @@ async function askGemini(
         "Skill 2: Chart Reading is enabled. If user asks chart/screenshot analysis, combine chart-read heuristics with live pair metrics.",
         "If chartReadingMode is true but no chart image/url is provided, clearly request screenshot upload or URL, and still provide preliminary analysis from live data.",
         "If user asks for trading suggestions, include concise risk-managed ideas.",
+        "If financialDataContext is present, use it as real user cash-flow context for sizing, reserves, savings rate, and investable monthly allocation.",
+        "Never expose raw bank account identifiers. Refer only to account names, masks, balances, categories, and summarized transaction insights.",
         "If user asks for backtest, provide assumptions and what to validate before execution.",
         "Do not anchor examples to old years unless user explicitly asks for historical years.",
         "Respond with technical depth: market structure, volatility regime, liquidity, execution assumptions, and risk limits.",
@@ -1573,11 +1606,21 @@ export async function POST(request: Request) {
     const swapIntent = parseSwapIntent(prompt, body.solBalance);
     let action: Awaited<ReturnType<typeof createJupiterSwap>> | undefined;
     let marketSkillContext: MarketSkillContext | undefined;
+    let financialDataContext: FinancialDataAgentResult | undefined;
 
     let ai: Awaited<ReturnType<typeof askGemini>>;
     try {
       marketSkillContext = await buildMarketSkillContext(prompt);
-      ai = await askGemini(prompt, body.solPrice, body.swapHistory, marketSkillContext);
+      if (body.appUserId && isPersonalFinanceIntent(prompt)) {
+        financialDataContext = await runFinancialDataAgent(body.appUserId);
+      }
+      ai = await askGemini(
+        prompt,
+        body.solPrice,
+        body.swapHistory,
+        marketSkillContext,
+        financialDataContext,
+      );
     } catch (error) {
       const text = error instanceof Error ? error.message : "Unknown assistant error";
       if (text.includes("429")) {

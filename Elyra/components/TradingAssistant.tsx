@@ -323,6 +323,7 @@ type TradingAssistantProps = {
   solPrice: number;
   solBalance: number;
   walletAddress?: string;
+  appUserId?: string | null;
   privyWallet?: unknown;
   creditsRemaining: number;
   creditsResetAt: number | null;
@@ -1033,6 +1034,7 @@ export default function TradingAssistant({
   solPrice,
   solBalance,
   walletAddress,
+  appUserId,
   privyWallet,
   creditsRemaining,
   creditsResetAt,
@@ -1246,6 +1248,7 @@ export default function TradingAssistant({
         body: JSON.stringify({
           prompt: text,
           walletAddress: walletAddress ?? null,
+          appUserId: appUserId ?? null,
           solPrice,
           solBalance,
           swapHistory: historyPreview,

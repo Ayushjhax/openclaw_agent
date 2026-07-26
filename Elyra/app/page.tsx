@@ -28,6 +28,7 @@ import TradingAssistant, {
 } from "@/components/TradingAssistant";
 import Navbar from "@/components/Navbar";
 import ActionModal from "@/components/ActionModal";
+import ConnectedAccountsPanel from "@/components/ConnectedAccountsPanel";
 
 type TokenBalance = {
   symbol: string;
@@ -70,6 +71,7 @@ export default function Home() {
 
   const [walletMenuOpen, setWalletMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [connectedAccountsOpen, setConnectedAccountsOpen] = useState(false);
   const [actionModalOpen, setActionModalOpen] = useState(false);
   const [activeAction, setActiveAction] = useState<
     "deposit" | "withdraw" | "transfer"
@@ -137,6 +139,21 @@ export default function Home() {
       privyUser.google?.email ??
       privyUser.phone?.number ??
       privyUser.wallet?.address ??
+      null
+    );
+  }, [user]);
+  const appUserId = useMemo(() => {
+    const privyUser = user as
+      | {
+          id?: string;
+          email?: { address?: string };
+          wallet?: { address?: string };
+        }
+      | undefined;
+    return (
+      privyUser?.id ??
+      privyUser?.email?.address ??
+      privyUser?.wallet?.address ??
       null
     );
   }, [user]);
@@ -419,7 +436,9 @@ export default function Home() {
 
   useEffect(() => {
     if (!isAuthenticated || !creditUserKey) {
-      setCreditsState(null);
+      queueMicrotask(() => {
+        setCreditsState(null);
+      });
       return;
     }
     const storageKey = `elyra:daily-credits:${creditUserKey}`;
@@ -448,8 +467,24 @@ export default function Home() {
       nextState = { remaining: DAILY_PROMPT_CREDITS, resetAt: now + CREDIT_WINDOW_MS };
       window.localStorage.setItem(storageKey, JSON.stringify(nextState));
     }
-    setCreditsState(nextState);
+    queueMicrotask(() => {
+      setCreditsState(nextState);
+    });
   }, [creditUserKey, isAuthenticated]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("connectedAccounts") === "1") {
+      queueMicrotask(() => {
+        setConnectedAccountsOpen(true);
+      });
+      params.delete("connectedAccounts");
+      params.delete("mastercardReturn");
+      const nextQuery = params.toString();
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}`;
+      window.history.replaceState(null, "", nextUrl);
+    }
+  }, []);
 
   const consumeAssistantCredit = useCallback(() => {
     if (!isAuthenticated || !creditUserKey) {
@@ -688,6 +723,7 @@ export default function Home() {
         onLogout={() => {
           void logout();
         }}
+        onOpenConnectedAccounts={() => setConnectedAccountsOpen(true)}
       />
 
       <main className="mx-auto flex w-full max-w-[1800px] flex-1 min-h-0 flex-col gap-0 overflow-hidden xl:grid xl:grid-cols-10 xl:grid-rows-[minmax(0,1fr)] xl:items-stretch">
@@ -708,6 +744,7 @@ export default function Home() {
             solPrice={solPrice}
             solBalance={balances[0]?.amount ?? 0}
             walletAddress={activeAddress}
+            appUserId={appUserId}
             privyWallet={activeWallet}
             creditsRemaining={creditsRemaining}
             creditsResetAt={creditsResetAt}
@@ -756,6 +793,16 @@ export default function Home() {
         userName={userDisplayName}
         statusMessage={statusMessage}
         onAddressCopied={() => setStatusMessage("Address copied.")}
+      />
+
+      <ConnectedAccountsPanel
+        open={connectedAccountsOpen}
+        appUserId={appUserId}
+        isAuthenticated={isAuthenticated}
+        onClose={() => setConnectedAccountsOpen(false)}
+        onLogin={() => {
+          void login();
+        }}
       />
     </div>
   );
