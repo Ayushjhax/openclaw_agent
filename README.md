@@ -1,4 +1,4 @@
-# Elyra — Sovereign Capital Autonomy
+# Elyra — The Sovereign Capital Autonomy
 
 **[getelyra.xyz](https://getelyra.xyz) · [try.getelyra.xyz](https://try.getelyra.xyz)**
 
